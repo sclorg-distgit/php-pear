@@ -27,7 +27,7 @@
 Summary: PHP Extension and Application Repository framework
 Name: %{?scl_prefix}php-pear
 Version: 1.10.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Epoch: 1
 # PEAR, Archive_Tar, XML_Util are BSD
 # Console_Getopt is PHP
@@ -48,6 +48,8 @@ Source22: http://pear.php.net/get/Console_Getopt-%{getoptver}.tgz
 Source23: http://pear.php.net/get/Structures_Graph-%{structver}.tgz
 Source24: http://pear.php.net/get/XML_Util-%{xmlutil}.tgz
 Source25: http://pear.php.net/get/PEAR_Manpages-%{manpages}.tgz
+
+Patch0:   php-pear-proxy.patch
 
 BuildArch: noarch
 BuildRequires: %{?scl_prefix}php(language) > 5.4
@@ -115,7 +117,7 @@ done
 cp %{SOURCE1} .
 
 # apply patches on used PEAR during install
-# None \o/
+# PATCH0 applied on installation tree
 
 sed -e 's/@SCL@/%{?scl:php70_}/' \
     -e 's:@METADIR@:%{metadir}:' \
@@ -188,7 +190,7 @@ install -m 644 -D macros.pear \
 
 # apply patches on installed PEAR tree
 pushd $RPM_BUILD_ROOT%{peardir} 
-# none
+patch --no-backup --fuzz 0 -p1 < %{PATCH0}
 popd
 
 # Why this file here ?
@@ -270,6 +272,9 @@ fi
 
 
 %changelog
+* Tue Sep  9 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-3
+- fix https connexion via proxy
+
 * Mon Aug  8 2016 Remi Collet <remi@fedoraproject.org> 1:1.10.1-2
 - improve default config, to avoid change in scriptlet
 - spec cleanup and remove unneeded scriplets
